@@ -1,23 +1,22 @@
 """Pytest configuration and shared database session fixtures."""
 
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
+from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker, Session
-from backend.app.core.database import Base
-from backend.app.models.course import Course
-from backend.app.models.commitment import FixedCommitment
-from backend.app.models.deadline import Deadline
-from backend.app.models.study_block import StudyBlock
+from backend.app.core.database import Base, get_db
 from backend.app.models.student_config import StudentConfig
-from backend.app.models.recovery_event import RecoveryEvent
+from backend.app.main import app
 
 
 @pytest.fixture(scope="function")
 def db_session() -> Session:
-    """Creates a clean, isolated in-memory SQLite database for each test function."""
+    """Creates a clean, isolated in-memory SQLite database using StaticPool."""
     engine = create_engine(
         "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
     )
 
     # Enforce SQLite foreign keys in-memory
@@ -49,3 +48,18 @@ def db_session() -> Session:
         session.rollback()
         session.close()
         Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture(scope="function")
+def client(db_session: Session) -> TestClient:
+    """FastAPI TestClient with overridden get_db dependency."""
+    def _override_get_db():
+        try:
+            yield db_session
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = _override_get_db
+    with TestClient(app) as test_client:
+        yield test_client
+    app.dependency_overrides.clear()
