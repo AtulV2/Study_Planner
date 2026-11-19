@@ -58,3 +58,9 @@ dist-ssr/
 *.swo
 .DS_Store
 Thumbs.db
+
+# Project-specific dev files
+.ai/
+.pytest_catch/
+blueprint/
+ai.md
