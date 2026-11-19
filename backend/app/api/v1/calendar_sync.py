@@ -16,7 +16,7 @@ def get_ical_feed(db: Session = Depends(get_db)):
         content=ical_content,
         media_type="text/calendar",
         headers={
-            "Content-Disposition": 'attachment; filename="autopace_schedule.ics"',
+            "Content-Disposition": 'attachment; filename="study_planner_schedule.ics"',
             "Cache-Control": "no-cache, no-store, must-revalidate",
         },
     )

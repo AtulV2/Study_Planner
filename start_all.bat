@@ -1,13 +1,13 @@
 @echo off
 echo ============================================================
-echo   Launching AutoPace (Resilient Academic Workload OS)
+echo   Launching Study Planner
 echo ============================================================
 echo.
 echo 1. Starting Backend Server in background window...
-start "AutoPace Backend" cmd /k "start_backend.bat"
+start "Study Planner Backend" cmd /k "start_backend.bat"
 
 echo 2. Starting Frontend Dev Server in background window...
-start "AutoPace Frontend" cmd /k "start_frontend.bat"
+start "Study Planner Frontend" cmd /k "start_frontend.bat"
 
 echo.
 echo All services launched!

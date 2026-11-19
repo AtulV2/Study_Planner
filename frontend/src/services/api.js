@@ -1,5 +1,5 @@
 /**
- * AutoPace REST API Client
+ * Study Planner REST API Client
  */
 
 const BASE_URL = '/api/v1';

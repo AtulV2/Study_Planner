@@ -11,11 +11,11 @@ class Settings(BaseSettings):
     """Global application settings and constraints."""
 
     # Project metadata
-    PROJECT_NAME: str = "AutoPace"
+    PROJECT_NAME: str = "Study Planner"
     API_V1_PREFIX: str = "/api/v1"
 
     # Database configuration: defaults to local SQLite with WAL mode
-    DATABASE_URL: str = "sqlite:///./autopace.db"
+    DATABASE_URL: str = "sqlite:///./study_planner.db"
 
     # Default student cognitive boundaries
     DEFAULT_MAX_DAILY_STUDY_HOURS: float = 5.5

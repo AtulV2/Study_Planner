@@ -1,4 +1,4 @@
-"""AutoPace FastAPI Application Factory and ASGI Entrypoint.
+"""Study Planner FastAPI Application Factory and ASGI Entrypoint.
 
 Configures:
 - Global CORS middleware supporting Vite/React local dev.
@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="Capacity-Aware, Self-Healing Academic Workload Operating System",
+    description="Capacity-Aware, Self-Healing Academic Workload Management System",
     version="1.0.0",
     lifespan=lifespan,
 )

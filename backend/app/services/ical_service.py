@@ -33,10 +33,10 @@ class ICalService:
         lines = [
             "BEGIN:VCALENDAR",
             "VERSION:2.0",
-            "PRODID:-//AutoPace//Resilient Academic Workload OS//EN",
+            "PRODID:-//Study Planner//Academic Workload Management System//EN",
             "CALSCALE:GREGORIAN",
             "METHOD:PUBLISH",
-            "X-WR-CALNAME:AutoPace Academic Schedule",
+            "X-WR-CALNAME:Study Planner Academic Schedule",
             "X-WR-TIMEZONE:UTC",
         ]
 
@@ -44,12 +44,12 @@ class ICalService:
             lines.extend(
                 [
                     "BEGIN:VEVENT",
-                    f"UID:autopace-studyblock-{block.id}@autopace.app",
+                    f"UID:studyplanner-studyblock-{block.id}@studyplanner.local",
                     f"DTSTAMP:{now_stamp}",
                     f"DTSTART:{cls._format_datetime(block.start_datetime)}",
                     f"DTEND:{cls._format_datetime(block.end_datetime)}",
                     f"SUMMARY:{block.title}",
-                    f"DESCRIPTION:AutoPace Focus Session ({block.duration_minutes}m) - Status: {block.status}",
+                    f"DESCRIPTION:Study Planner Focus Session ({block.duration_minutes}m) - Status: {block.status}",
                     f"STATUS:{'CONFIRMED' if block.status != 'missed' else 'CANCELLED'}",
                     "END:VEVENT",
                 ]

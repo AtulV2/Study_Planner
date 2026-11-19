@@ -46,7 +46,7 @@ export function CommandBar({
           </div>
           <div>
             <span className="title-app" style={{ color: 'var(--text-primary)' }}>
-              AutoPace
+              Study Planner
             </span>
             <span
               style={{

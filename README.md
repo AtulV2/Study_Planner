@@ -1,123 +1,211 @@
-# AutoPace (ResilientCal)
+# Study Planner
 
-> **A Capacity-Aware, Self-Healing Academic Workload Operating System.**  
-> Built with pure domain algorithms, FastAPI, SQLAlchemy 2.0, and a Swiss editorial modern craft UI (React 19 + Vite).
-
----
-
-## ⚡ Core Philosophy & Non-Negotiables
-
-AutoPace is designed to eradicate student burnout through mathematical realism:
-- **Zero AI-Slop:** No gratuitous neon gradients, blurry glassmorphism, or intrusive chatbots. Tactile warm slate tokens (`#F8FAFC`, `#0F172A`, `#E2E8F0`), JetBrains Mono time metrics, and high-contrast typography.
-- **Cognitive Guardrail:** Strictly enforces a **5.5-hour daily study ceiling**. Sessions exceeding daily capacity gracefully carry over to future free windows.
-- **Dynamic Recovery Engine:** When life happens and a session is missed, AutoPace never silently scrambles your week. It presents a clear **side-by-side Before/After diff** and lets you choose between:
-  1. **Auto-Heal:** Mathematical gap-finding into future buffer windows before deadlines.
-  2. **Triage (MVP Mode):** Downscales low-priority study loads (-30%) and medium-priority (-20%) to safeguard critical exam prep.
-  3. **Shift Today:** Pushes today's remaining blocks forward, overflowing past bedtime into tomorrow morning.
-- **Mandatory Physiological Pauses:** Automatically injects daily lunch (12:30–13:15), dinner (18:30–19:15), and 15-minute transit buffers after every class.
-- **Universal iCalendar Feed:** Live RFC 5545 `.ics` subscription URL to sync directly with Apple Calendar, Google Calendar, or Outlook.
+A capacity-aware, self-healing academic workload management system designed to balance coursework, study sessions, and academic deadlines.
 
 ---
 
-## 🏗️ Architecture
+## Table of Contents
 
-```text
-autopace/
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Repository Structure](#repository-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+  - [One-Click Launcher (Windows)](#one-click-launcher-windows)
+- [Automated Testing](#automated-testing)
+- [Live Calendar Synchronization](#live-calendar-synchronization)
+- [Documentation](#documentation)
+- [License](#license)
+
+---
+
+## Overview
+
+Academic schedules often suffer from unrealistic workload allocation, leading to academic burnout and missed deadlines. Traditional calendar tools require manual rescheduling whenever an unforeseen delay occurs.
+
+**Study Planner** solves this by treating time as a finite capacity:
+- It enforces configurable daily study hour limits (default: 5.5 hours/day).
+- It injects mandatory biological pauses (lunch, dinner) and class transit buffers.
+- When study sessions are missed, an integrated recovery engine recalculates schedules using mathematical gap-finding and triage algorithms instead of silently accumulating overdue tasks.
+
+---
+
+## Key Features
+
+- **Capacity-Aware Workload Allocation:** Enforces daily cognitive caps and schedules study blocks within optimal daytime windows.
+- **Dynamic Recovery Engine:** When a study block is missed, users can choose from three recovery strategies:
+  1. *Auto-Heal:* Automatically finds open gap buffers prior to assignment deadlines.
+  2. *Triage Mode:* Scalably downscales study targets for lower-priority tasks to protect critical exam prep.
+  3. *Shift Forward:* Advances remaining blocks while respecting sleep and wake boundaries.
+- **Transit & Meal Buffer Injection:** Automatically reserves dedicated intervals for lunch (12:30–13:15), dinner (18:30–19:15), and 15-minute buffers after each in-person class.
+- **Live iCalendar Feed:** Exposes an RFC 5545 compliant `.ics` endpoint to subscribe to updated schedules via Google Calendar, Apple Calendar, or Microsoft Outlook.
+- **Weekly Canvas Interface:** Interactive visual weekly calendar with real-time burnout capacity metering and quick-intake dialogs for courses, commitments, and deadlines.
+- **Dual-Engine Persistence:** Default zero-config SQLite with WAL mode for local development, with native support for managed PostgreSQL (e.g., Neon) in production.
+
+---
+
+## Architecture
+
+```
++-----------------------------------------------------------+
+|                   Client Interface                        |
+|        (React 19, Vite, Lucide Icons, Responsive Grid)    |
++-----------------------------------------------------------+
+                             │
+                      REST API / JSON
+                             │
+                             ▼
++-----------------------------------------------------------+
+|                   Backend Service                         |
+|      FastAPI, Pydantic v2, Pure Domain Algorithms        |
+|   (Interval Merging, Capacity Allocator, Recovery Engine) |
++-----------------------------------------------------------+
+          │                                  │
+          ▼                                  ▼
++-----------------------+          +------------------------+
+|   Relational Database |          |   External Subscribers |
+|  (SQLite / PostgreSQL)|          | (Google/Apple Calendar)|
++-----------------------+          +------------------------+
+```
+
+---
+
+## Repository Structure
+
+```
+study-planner/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/         # FastAPI REST routes (courses, commitments, deadlines, recovery, calendar)
-│   │   ├── core/           # Dual-engine DB setup (SQLite WAL & Neon PostgreSQL connection pool)
-│   │   ├── models/         # SQLAlchemy 2.0 ORM models with cascading deletes & UTC datetimes
-│   │   ├── schemas/        # Pydantic v2 validation DTOs & RFC 7807 error format
-│   │   ├── services/       # Framework-agnostic pure domain algorithms (Scheduler, Recovery, Capacity, iCal)
-│   │   └── main.py         # ASGI application entrypoint & CORS middleware
-│   └── tests/              # 100% green test pyramid (Pytest unit & integration suites)
+│   │   ├── api/v1/          # REST endpoints (courses, commitments, deadlines, recovery)
+│   │   ├── core/            # Database engine, settings, and domain exceptions
+│   │   ├── models/          # SQLAlchemy ORM models with cascading relationships
+│   │   ├── schemas/         # Pydantic validation models
+│   │   ├── services/        # Scheduling, capacity allocation, recovery, and iCal generation
+│   │   └── main.py          # Application entry point and middleware configuration
+│   ├── tests/               # Pytest test suite (unit and integration tests)
+│   └── requirements.txt     # Python backend dependencies
 ├── frontend/
 │   ├── src/
-│   │   ├── components/     # Weekly Canvas Grid, Burnout Meter, Recovery Diff Modal, Quick Intake Modals
-│   │   ├── hooks/          # Optimistic mutation state management
-│   │   ├── services/       # REST API client
-│   │   └── styles/         # Warm slate tokens, typography, and tactile UI styles
-│   ├── package.json
-│   └── vite.config.js
-├── blueprint/              # Master engineering specifications
-└── .ai/                    # Phase-Gate governance rules, immutable plans, checkpoints, and audits
+│   │   ├── components/      # UI components (WeeklyCanvas, CommandBar, Modals)
+│   │   ├── services/        # API integration client
+│   │   └── styles/          # Design system and typography styles
+│   ├── package.json         # Node.js dependencies and scripts
+│   └── vite.config.js       # Vite bundler configuration
+└── docs/                    # Technical documentation and guides
 ```
 
 ---
 
-## 🚀 Quickstart & Local Setup
+## Getting Started
 
 ### Prerequisites
-- Python 3.11+
-- Node.js 18+ and npm
 
-### 1. Backend Setup
+- **Python:** Version 3.11 or higher
+- **Node.js:** Version 18.0 or higher
+- **npm:** Version 9.0 or higher
+
+### Backend Setup
+
+1. Navigate to the project root and create a virtual environment:
+   ```bash
+   python -m venv .venv
+   ```
+
+2. Activate the virtual environment:
+   - **Windows:**
+     ```bash
+     .venv\Scripts\activate
+     ```
+   - **macOS / Linux:**
+     ```bash
+     source .venv/bin/activate
+     ```
+
+3. Install required Python packages:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+
+4. Start the development server:
+   ```bash
+   python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+   ```
+
+The interactive OpenAPI documentation will be accessible at:  
+`http://127.0.0.1:8000/docs`
+
+### Frontend Setup
+
+1. Open a new terminal and navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+The application interface will be accessible at:  
+`http://localhost:5173`
+
+### One-Click Launcher (Windows)
+
+On Windows systems, you can launch both backend and frontend servers simultaneously by double-clicking:
+```
+start_all.bat
+```
+
+---
+
+## Automated Testing
+
+The backend includes a comprehensive test suite covering database models, foreign key cascades, capacity allocation algorithms, buffer injections, and recovery strategies.
+
+Run the test suite from the repository root:
+
 ```bash
-# Install Python dependencies
-pip install -r backend/requirements.txt
-
-# Run the automated test suite
 python -m pytest backend/tests -v
-
-# Launch the FastAPI backend server (http://127.0.0.1:8000)
-python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-Interactive API docs will be available at: **http://127.0.0.1:8000/docs**
 
-### 2. Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Open your browser to: **http://localhost:5173**
-
-### 3. Windows One-Click Launcher
-Double-click `start_all.bat` in the project root to start both backend and frontend concurrently.
+All unit and integration tests validate domain rules against an isolated, in-memory SQLite database instance.
 
 ---
 
-## 🧪 Testing & Validation
+## Live Calendar Synchronization
 
-The codebase includes comprehensive unit and integration tests covering foreign key cascades, mathematical interval merging, buffer injections, burnout cap overflow, and dynamic recovery diffs:
+Study Planner generates a live RFC 5545 calendar feed. To sync with your external calendar:
 
-```bash
-python -m pytest backend/tests -v
-```
-
-All 18 automated tests pass with zero placeholders:
-```
-backend/tests/integration/test_commitments_api.py::test_commitments_crud_workflow PASSED
-backend/tests/integration/test_courses_api.py::test_courses_crud_workflow PASSED
-backend/tests/integration/test_deadlines_api.py::test_deadlines_crud_and_autoschedule PASSED
-backend/tests/integration/test_ical_api.py::test_ical_feed_export PASSED
-backend/tests/integration/test_recovery_api.py::test_recovery_endpoints_flow PASSED
-backend/tests/integration/test_seed_and_health.py::test_health_and_config_workflow PASSED
-backend/tests/unit/test_models.py::test_course_creation_and_retrieval PASSED
-backend/tests/unit/test_models.py::test_course_cascade_deletes_commitments_and_deadlines PASSED
-backend/tests/unit/test_models.py::test_deadline_cascade_deletes_study_blocks PASSED
-backend/tests/unit/test_models.py::test_recovery_event_logging PASSED
-backend/tests/unit/test_recovery.py::test_auto_heal_missed_blocks PASSED
-backend/tests/unit/test_recovery.py::test_triage_mvp_downscaling PASSED
-backend/tests/unit/test_recovery.py::test_shift_today_and_bedtime_overflow PASSED
-backend/tests/unit/test_recovery.py::test_get_micro_action PASSED
-backend/tests/unit/test_scheduler.py::test_interval_merge_logic PASSED
-backend/tests/unit/test_scheduler.py::test_meal_and_transit_buffers PASSED
-backend/tests/unit/test_scheduler.py::test_free_gaps_finding PASSED
-backend/tests/unit/test_scheduler.py::test_daily_study_cap_enforcement PASSED
-```
+1. Copy the feed URL:
+   ```text
+   http://127.0.0.1:8000/api/v1/calendar/feed.ics
+   ```
+2. In Google Calendar, Apple Calendar, or Outlook, choose **Add Calendar** > **Subscribe from Web** (or **From URL**) and paste the address.
 
 ---
 
-## 📅 Live Calendar Sync
+## Documentation
 
-Subscribe to your AutoPace schedule in Apple Calendar or Google Calendar via the live endpoint:
-```text
-http://127.0.0.1:8000/api/v1/calendar/feed.ics
-```
+Comprehensive project documentation is maintained in the [`docs/`](docs/) directory:
+
+- [Documentation Index](docs/README.md)
+- [System Architecture](docs/ARCHITECTURE.md)
+- [Backend Setup & Configuration](docs/BACKEND_SETUP.md)
+- [Frontend Setup & Components](docs/FRONTEND_SETUP.md)
+- [API Reference](docs/API_REFERENCE.md)
+- [Testing Guide](docs/TESTING.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
 
 ---
 
-## 📄 License
-MIT License. Open-source and built for student well-being.
+## License
+
+This project is licensed under the [MIT License](LICENSE).
