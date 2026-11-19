@@ -43,7 +43,7 @@ export function EventCard({
           </span>
         </div>
 
-        <div className="title-card" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
+        <div className="title-card" style={{ color: 'var(--text-primary)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {item.title}
         </div>
 
@@ -151,9 +151,10 @@ export function EventCard({
       <div
         style={{
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          gap: '6px',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          justifyContent: 'flex-start',
+          gap: '4px',
           marginTop: '6px',
           paddingTop: '6px',
           borderTop: '1px solid var(--border-subtle)',
