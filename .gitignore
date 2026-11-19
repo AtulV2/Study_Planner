@@ -64,3 +64,6 @@ Thumbs.db
 .pytest_catch/
 blueprint/
 ai.md
+
+# Deployment Steps
+DEPLOYMENT.md
