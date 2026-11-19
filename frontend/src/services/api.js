@@ -2,7 +2,10 @@
  * Study Planner REST API Client
  */
 
-const BASE_URL = '/api/v1';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+  ? import.meta.env.VITE_BACKEND_URL.replace(/\/+$/, '')
+  : '';
+const BASE_URL = `${BACKEND_URL}/api/v1`;
 
 async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
